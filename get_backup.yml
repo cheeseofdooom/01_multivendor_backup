@@ -1,0 +1,67 @@
+---
+
+- name: Config backup pre check
+  hosts: live
+  gather_facts: no
+
+
+  vars: 
+       git_branch: /home/remote/ansible_tests/01_multivendor_backup
+
+  tasks:
+
+    - set_fact: 
+        timestamp: "{{lookup('pipe', 'date +%Y%m%d')}}"
+      run_once: yes
+    
+    - name: 1.0 Git Switch to target branch
+      command: git checkout "{{ git_branch }}"
+      args:
+        chdir: "{{ git_branch }}"
+      changed_when: false
+      run_once: yes
+
+    - name: 1.1 Git Synchronize with remote branch
+      command: git pull
+      args:
+        chdir: "{{ git_branch }}"
+      changed_when: false
+      run_once: yes
+
+    - name: "IOS Devices"
+      block:
+        - name: "1.0: Backup Cisco IOS devices From Inventory"
+          ios_config:
+            backup: yes
+            backup_options:
+              filename: "{{ inventory_hostname }}.txt"
+              dir_path: "{{ git_branch }}/backup/{{timestamp}}"
+      when: ansible_network_os == 'ios'
+
+
+    - name: "JUNOS devices"
+      block:
+        - name: "2.0: Backup Juniper JUNOS devices From Inventory"
+          junos_config:
+            backup: yes
+            backup_options:
+              filename: "{{ inventory_hostname }}.txt"
+              dir_path: "{{ git_branch }}/backup/{{timestamp}}"
+      when: ansible_network_os == 'junipernetworks.junos.junos'
+
+    - name: 3.0 Check the directory status
+      ansible.builtin.command: git status
+      args:
+        chdir: "{{ git_branch }}"
+      register: changes
+      changed_when: false
+      run_once: yes
+
+    - name: 3.1 Add files to Git staging area, commit and push
+      shell: |
+        git add .
+        git commit -m "{{ timestamp }}"
+        git push
+      args:
+        chdir: "{{ git_branch }}"
+      run_once: yes

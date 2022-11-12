@@ -1,0 +1,37 @@
+set version 20.3R1.8
+set system root-authentication encrypted-password "$6$Y7hxkwdl$kclyfex6cfp5Ewl.P6eWtSinNS1vPKC956Aw8HLMGB4zBuEtCYk.zK0vTKvqBzM4VBhxL5BBspS5GCoF3oQnO1"
+set system login user ansible uid 2000
+set system login user ansible class super-user
+set system login user ansible authentication encrypted-password "$6$Vi8TZeo5$.ymIFxNHQ0Mef4rxYcTHw6LODIe0BgyNZXbpQATZtf81GRc/HEhF5kWWV3a/kgTX6h3oJk3HKH8JxE.QJc0nU0"
+set system services ssh
+set system services netconf ssh
+set system services web-management http interface fxp0.0
+set system services web-management https system-generated-certificate
+set system services web-management https interface fxp0.0
+set system syslog user * any emergency
+set system syslog file messages any any
+set system syslog file messages authorization info
+set system syslog file interactive-commands interactive-commands any
+set system license autoupdate url https://ae1.juniper.net/junos/key_retrieval
+set security screen ids-option untrust-screen icmp ping-death
+set security screen ids-option untrust-screen ip source-route-option
+set security screen ids-option untrust-screen ip tear-drop
+set security screen ids-option untrust-screen tcp syn-flood alarm-threshold 1024
+set security screen ids-option untrust-screen tcp syn-flood attack-threshold 200
+set security screen ids-option untrust-screen tcp syn-flood source-threshold 1024
+set security screen ids-option untrust-screen tcp syn-flood destination-threshold 2048
+set security screen ids-option untrust-screen tcp syn-flood queue-size 2000
+set security screen ids-option untrust-screen tcp syn-flood timeout 20
+set security screen ids-option untrust-screen tcp land
+set security policies from-zone trust to-zone trust policy default-permit match source-address any
+set security policies from-zone trust to-zone trust policy default-permit match destination-address any
+set security policies from-zone trust to-zone trust policy default-permit match application any
+set security policies from-zone trust to-zone trust policy default-permit then permit
+set security policies from-zone trust to-zone untrust policy default-permit match source-address any
+set security policies from-zone trust to-zone untrust policy default-permit match destination-address any
+set security policies from-zone trust to-zone untrust policy default-permit match application any
+set security policies from-zone trust to-zone untrust policy default-permit then permit
+set security policies pre-id-default-policy then log session-close
+set security zones security-zone trust tcp-rst
+set security zones security-zone untrust screen untrust-screen
+set interfaces fxp0 unit 0 family inet address 10.2.15.133/28
