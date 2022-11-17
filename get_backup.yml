@@ -11,7 +11,7 @@
   tasks:
 
     - set_fact: 
-        timestamp: "{{lookup('pipe', 'date +%Y%m%d')}}"
+        timestamp: "{{lookup('pipe', 'date +%Y%m%d&h')}}"
       run_once: yes
     
     - name: 1.0 Git Switch to target branch
