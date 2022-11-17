@@ -1,0 +1,6 @@
+---
+ansible_network_os: "community.routeros.routeros"  
+ansible_connection: "ansible.netcommon.network_cli"
+
+hostname:
+  name: RB-ONE
